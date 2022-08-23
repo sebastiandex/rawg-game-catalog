@@ -51,7 +51,7 @@ const Slug = (props) => {
 export default Slug
 
 export async function getStaticPaths() {
-    const data = await (await fetch(`${API}/games?page=1&key=${API_KEY}`))?.json()
+    const data = await (await fetch(`${API}/games?page_size=300&key=${API_KEY}`))?.json()
     const paths = data.results.map((item) => ({
         params: { slug: item.slug },
     }));

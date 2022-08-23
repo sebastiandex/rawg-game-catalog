@@ -11,13 +11,13 @@ const Home = (props) => {
     const [isSearching, setIsSearching] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchValue, setSearchValue] = useState('');
-    const [activePlatform, setActivePlatform] = useState(0);
+    const [activePlatform, setActivePlatform] = useState('0');
     const [sortValue, setSortValue] = useState('');
 
     const platforms = props.platforms.results || [];
-    const parent = activePlatform && activePlatform !== '0' ? `parent_platforms=${activePlatform}&` : '';
-    const search = searchValue ? `search=${searchValue}&` : '';
-    const sort = sortValue ? `ordering=${sortValue}&` : '';
+    const [parent] = useState(activePlatform && activePlatform !== '0' ? `parent_platforms=${activePlatform}&` : '');
+    const [search] = useState(searchValue ? `search=${searchValue}&` : '');
+    const [sort] = useState(sortValue ? `ordering=${sortValue}&` : '');
     const isMount = useIsMount();
 
     useEffect(() => {
@@ -74,9 +74,13 @@ const Home = (props) => {
     const filterAndSort = (toggle, value) => {
         setCurrentPage(1);
         setIsSearching(true)
-        const parentValue = toggle ? `parent_platforms=${value}&` : parent;
-        const sortValue = !toggle ? `ordering=${value}&` : sort;
+        console.log({parent})
+        console.log({sort})
+        const parentValue = toggle && value !== '0' ? `parent_platforms=${value}&` : parent;
+        const sortValue = !toggle && value ? `ordering=${value}&` : sort;
+        console.log({parentValue})
         if (toggle) {
+            console.log(value, typeof value)
             setActivePlatform(value)
         } else {
             setSortValue(value);
