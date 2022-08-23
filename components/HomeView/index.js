@@ -5,7 +5,6 @@ const HomeView = ({props}) => {
     const {data, isFetching} = props;
     console.log(props)
     return (
-            <MainContainer>
                 <GridWrapper>
                     {data?.map((item) => {
                         return (
@@ -13,9 +12,8 @@ const HomeView = ({props}) => {
 
                         )
                     })}
+                    {isFetching ? <Loader>Loading...</Loader> : ''}
                 </GridWrapper>
-                {isFetching ? <Loader>Идёт загрузка...</Loader> : ''}
-            </MainContainer>
         )
 }
 

@@ -1,8 +1,5 @@
 import styled from 'styled-components';
 
-const MainContainer = styled.div`
-  padding: 2rem;
-`
 const GridWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill,270px);
@@ -10,8 +7,10 @@ const GridWrapper = styled.div`
   grid-gap: 10px;
 `
 const Loader = styled.div`
+  position: fixed;
+  bottom: 15px;
+  right: 30px;
   display: flex;
- 
   align-items: center;
   justify-content: center;
   height: 32px;
@@ -24,4 +23,4 @@ const Loader = styled.div`
   margin: 15px auto;
 `
 
-export {MainContainer, GridWrapper, Loader}
+export {GridWrapper, Loader}

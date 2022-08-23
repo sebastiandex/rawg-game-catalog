@@ -3,45 +3,68 @@ import Link from "next/link";
 import {API, API_KEY} from "../../constants";
 import {useEffect, useState} from "react";
 import Image from "next/image";
+import {BackButton, Description, TopBlock, MainContainer, Span, StyledLink, Title, InfoBlock} from "./styles";
+import SwiperView from "../../components/Swiper";
 
 const Slug = () => {
     const router = useRouter();
-    const {slug, id} = router.query;
-    const data = JSON.parse(router.query.data)
-    // const [data, setData] = useState({})
+    const {slug} = router.query;
+    const [data, setData] = useState(router.query.data ? JSON.parse(router.query.data) : {});
+    const [screenshots, setScreenshots] = useState([])
+
     useEffect(() => {
-        // fetch(`${API}/games?id=${id}&key=${API_KEY}`)
-        //     .then((res) => {
-        //         return res.json()
-        //     })
-        //     .then((responseData) => { // responseData = undefined
-        //         console.log('responseData', responseData)
-        //         // setData([...data, ...responseData.results])
-        //         // setIsFetching(false)
-        //         // setCurrentPage(prevState => prevState + 1)
-        //         return responseData;
-        //     })
-    }, [id])
+        if (slug) {
+            fetch(`${API}/games/${slug}?key=${API_KEY}`)
+                .then((res) => {
+                    return res.json()
+                })
+                .then((responseData) => {
+                    setData(responseData)
+                    return responseData;
+                })
+            fetch(`${API}/games/${slug}/screenshots?key=${API_KEY}`)
+                .then((res) => {
+                    return res.json()
+                })
+                .then((responseData) => {
+                    setScreenshots(responseData.results)
+                    return responseData;
+                })
+        }
+    }, [slug])
 
     return (
-        <div>
-            <h1>Just Testing</h1>
-            <Link href="/">Back to home</Link>
-            <Image
-                height='144'
-                width='300'
-                src={data.background_image}
-            />
-            <h2>{data.name}</h2>
-        </div>
+        <MainContainer>
+            <Link href="/">
+                <BackButton>&#8592; Back to home</BackButton>
+            </Link>
+            <Title>{data.name || slug}</Title>
+
+            <TopBlock>
+                <Image
+                    height='300'
+                    width='650'
+                    src={data.background_image || ''}
+                />
+                <InfoBlock>
+                    <Span>&#11088; &nbsp;{data.rating}</Span>
+                    <Span>&#128197;&nbsp;{data.released}</Span>
+                    <Span>&#128377;&nbsp;
+                        <StyledLink
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={data.website || ''}
+                        >
+                            {data.website}
+                        </StyledLink>
+                    </Span>
+                </InfoBlock>
+
+            </TopBlock>
+                <SwiperView data={screenshots}/>
+            <Description dangerouslySetInnerHTML={{ __html: data.description }} />
+        </MainContainer>
     )
 }
 
 export default Slug
-
-// export async function getServerSideProps(context) {
-//     console.log('context', context)
-//     return {
-//         props: context.data, // will be passed to the page component as props
-//     }
-// }

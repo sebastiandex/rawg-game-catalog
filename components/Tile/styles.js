@@ -7,6 +7,7 @@ const Container = styled.div`
   background-color: #222222;
   border-radius: 10px;
   cursor: pointer;
+  
   &:hover {
     background-color: #111111;
   }

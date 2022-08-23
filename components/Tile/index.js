@@ -12,13 +12,14 @@ const Tile = ({data}) => {
         >
             <Container>
                 <Image
+                    alt='img'
                     height='144'
                     width='250'
-                    src={background_image}
+                    src={background_image || ''}
                 />
                 <Title>{name}</Title>
-                <div>Рейтинг: {rating}</div>
-                <div>Дата релиза:{released}</div>
+                <div>&#11088; &nbsp; {rating}</div>
+                <div>&#128197; &nbsp; {released}</div>
             </Container>
         </Link>
 
