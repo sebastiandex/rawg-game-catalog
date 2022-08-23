@@ -1,15 +1,24 @@
-import Head from 'next/head'
 import {useEffect, useState} from "react";
 import {API, API_KEY} from "../constants";
-import HomeView from "../components/HomeView";
+import TilesView from "../components/TilesView";
 import {MainContainer} from "./styles";
-
+import {useIsMount} from "../hooks";
+import FilterBlock from "../components/FilterBlock";
 
 const Home = (props) => {
-    const [data, setData] = useState([]);
-    const [isFetching, setIsFetching] = useState(true);
+    const [data, setData] = useState(props?.data?.results || []);
+    const [isFetching, setIsFetching] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchValue, setSearchValue] = useState('');
+    const [activePlatform, setActivePlatform] = useState(0);
+    const [sortValue, setSortValue] = useState('');
+
+    const platforms = props.platforms.results || [];
+    const parent = activePlatform && activePlatform !== '0' ? `parent_platforms=${activePlatform}&` : '';
+    const search = searchValue ? `search=${searchValue}&` : '';
+    const sort = sortValue ? `ordering=${sortValue}&` : '';
+    const isMount = useIsMount();
 
     useEffect(() => {
         document.addEventListener('scroll', scrollHandler)
@@ -17,49 +26,35 @@ const Home = (props) => {
             document.removeEventListener('scroll', scrollHandler)
         }
     }, []);
-    
-    useEffect(() => {
-        if (searchValue.length > 2) {
 
+    useEffect(() => {
+        if (!isMount) {
             const delayDebounceFn = setTimeout(() => {
-            console.log(searchValue)
-                fetch(`${API}/games?search=${searchValue}&key=${API_KEY}`)
+                setIsSearching(true)
+                fetch(`${API}/games?${search}${parent}${sort}key=${API_KEY}`)
                     .then((res) => {
                         return res.json()
                     })
-                    .then((responseData) => { // responseData = undefined
+                    .then((responseData) => {
                         setData(responseData.results)
-                        setIsFetching(false)
+                        setIsSearching(false)
+                        setCurrentPage(1)
                         return responseData;
                     })
-        }, 500)
-        return () => clearTimeout(delayDebounceFn)
+            }, 500)
+            return () => clearTimeout(delayDebounceFn)
         }
-
-    }, [searchValue])
-
-    useEffect(() => {
-        if (data.length === 0) {
-            fetch(`${API}/games?page=${currentPage}&key=${API_KEY}`)
-                .then((res) => {
-                    return res.json()
-                })
-                .then((responseData) => { // responseData = undefined
-                    setData([...data, ...responseData.results])
-                    setIsFetching(false)
-                    setCurrentPage(prevState => prevState + 1)
-                    return responseData;
-                })
-        }
-    }, []);
+    }, [searchValue]);
 
     useEffect(() => {
         if (isFetching) {
-            fetch(`${API}/games?page=${currentPage}&key=${API_KEY}`)
+            fetch(`${API}/games?${search}${parent}${sort}page=${currentPage + 1}&key=${API_KEY}`)
                 .then((res) => {
                     return res.json()
                 })
-                .then((responseData) => { // responseData = undefined
+                .then((responseData) => {
+                    console.log(data)
+                    console.log(responseData.results)
                     setData([...data, ...responseData.results])
                     setCurrentPage(prevState => prevState + 1)
                     setIsFetching(false)
@@ -71,23 +66,55 @@ const Home = (props) => {
         const scrollHeight = e.target.documentElement.scrollHeight
         const scrollTop = e.target.documentElement.scrollTop
         const innerHeight = window.innerHeight
-        if ((scrollHeight - (scrollTop + innerHeight) < 100) ) {
+        if ((scrollHeight - (scrollTop + innerHeight) < 100)) {
             setIsFetching(true)
         }
     };
 
+    const filterAndSort = (toggle, value) => {
+        setCurrentPage(1);
+        setIsSearching(true)
+        const parentValue = toggle ? `parent_platforms=${value}&` : parent;
+        const sortValue = !toggle ? `ordering=${value}&` : sort;
+        if (toggle) {
+            setActivePlatform(value)
+        } else {
+            setSortValue(value);
+        }
+        fetch(`${API}/games?${search}${parentValue}${sortValue}page=1&key=${API_KEY}`)
+            .then((res) => {
+                return res.json()
+            })
+            .then((responseData) => {
+                setIsSearching(false)
+                setData(responseData.results)
+            })
+    }
+
     return (
         <MainContainer>
-            <input
-                type="search"
-                placeholder='Введите запрос для поиска'
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+            <FilterBlock
+                platforms={platforms}
+                searchValue={searchValue}
+                handleSearch={setSearchValue}
+                handleFilterAndSort={filterAndSort}
             />
-        <HomeView props={{data, isFetching}}/>
+            <TilesView props={{data, isFetching, isSearching}}/>
         </MainContainer>
 
     )
 }
 
 export default Home
+
+export async function getStaticProps() {
+    const data = await (await fetch(`${API}/games?page=1&key=${API_KEY}`))?.json()
+    const platforms = await (await fetch(`${API}/platforms/lists/parents?key=${API_KEY}`))?.json()
+
+    return {
+        props: {
+            data,
+            platforms
+        }
+    }
+}

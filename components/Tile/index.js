@@ -1,21 +1,22 @@
 import Link from "next/link";
 import Image from "next/image";
 import {Container, Title} from "./styles";
+import noImage from './../../public/images/noimage.jpeg';
 
 const Tile = ({data}) => {
-    const {slug, background_image, name, id, rating, released} = data;
+    const {slug, background_image, name, rating, released} = data;
     return (
         <Link
-            href={{pathname: `games/${slug}`, query: {data: JSON.stringify(data)}}}
+            href={{pathname: `game/${slug}`, query: {data: JSON.stringify(data)}}}
             passHref
-            as={`games/${slug}`}
+            as={`game/${slug}`}
         >
             <Container>
                 <Image
                     alt='img'
                     height='144'
                     width='250'
-                    src={background_image || ''}
+                    src={background_image || noImage}
                 />
                 <Title>{name}</Title>
                 <div>&#11088; &nbsp; {rating}</div>

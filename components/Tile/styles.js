@@ -13,20 +13,8 @@ const Container = styled.div`
   }
 `
 
-const Loader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
-  width: 150px;
-  background: whitesmoke;
-  border-radius: 15px;
-  color: black;
-  font-weight: bolder;
-  font-size: 13px;
-  margin: 15px auto;
-`
 const Title = styled.div`
+  height: 65px;
     font-size: 18px;
     padding: 10px 0;
 `

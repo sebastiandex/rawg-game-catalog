@@ -1,37 +1,17 @@
 import {useRouter} from "next/router";
 import Link from "next/link";
 import {API, API_KEY} from "../../constants";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import Image from "next/image";
 import {BackButton, Description, TopBlock, MainContainer, Span, StyledLink, Title, InfoBlock} from "./styles";
 import SwiperView from "../../components/Swiper";
+import noImage from './../../public/images/noimage.jpeg';
 
-const Slug = () => {
+const Slug = (props) => {
     const router = useRouter();
     const {slug} = router.query;
-    const [data, setData] = useState(router.query.data ? JSON.parse(router.query.data) : {});
-    const [screenshots, setScreenshots] = useState([])
-
-    useEffect(() => {
-        if (slug) {
-            fetch(`${API}/games/${slug}?key=${API_KEY}`)
-                .then((res) => {
-                    return res.json()
-                })
-                .then((responseData) => {
-                    setData(responseData)
-                    return responseData;
-                })
-            fetch(`${API}/games/${slug}/screenshots?key=${API_KEY}`)
-                .then((res) => {
-                    return res.json()
-                })
-                .then((responseData) => {
-                    setScreenshots(responseData.results)
-                    return responseData;
-                })
-        }
-    }, [slug])
+    const [data] = useState(props.data || {});
+    const [screenshots] = useState(props.screenshots.results || [])
 
     return (
         <MainContainer>
@@ -42,9 +22,10 @@ const Slug = () => {
 
             <TopBlock>
                 <Image
+                    alt='image'
                     height='300'
                     width='650'
-                    src={data.background_image || ''}
+                    src={data.background_image || noImage}
                 />
                 <InfoBlock>
                     <Span>&#11088; &nbsp;{data.rating}</Span>
@@ -68,3 +49,25 @@ const Slug = () => {
 }
 
 export default Slug
+
+export async function getStaticPaths() {
+    const data = await (await fetch(`${API}/games?page=1&key=${API_KEY}`))?.json()
+    const paths = data.results.map((item) => ({
+        params: { slug: item.slug },
+    }));
+    return {
+        paths,
+        fallback: false,
+    };
+}
+
+export async function getStaticProps(context) {
+    const data = await (await fetch(`${API}/games/${context.params.slug}?key=${API_KEY}`))?.json()
+    const screenshots = await (await fetch(`${API}/games/${context.params.slug}/screenshots?key=${API_KEY}`))?.json()
+    return {
+        props: {
+            data,
+            screenshots
+        }
+    }
+}
