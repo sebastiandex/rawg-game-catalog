@@ -10,7 +10,7 @@ const TilesView = ({props}) => {
                     <Tile key={item.id} data={item}/>
                 )
             })}
-            {isFetching || isSearching? <Loader>Loading...</Loader> : ''}
+            {isFetching || isSearching ? <Loader>Loading...</Loader> : ''}
         </GridWrapper>
     )
 }

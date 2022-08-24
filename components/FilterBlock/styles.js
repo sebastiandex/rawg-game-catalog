@@ -15,6 +15,7 @@ const Input = styled.input`
     color: whitesmoke;
   }
 `
+
 const Select = styled.select`
   margin-right: 15px;
   margin-bottom: 10px;

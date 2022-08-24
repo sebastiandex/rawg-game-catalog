@@ -60,7 +60,6 @@ const Slug = () => {
                         </StyledLink>
                     </Span>
                 </InfoBlock>
-
             </TopBlock>
             <SwiperView data={screenshots}/>
             <Description dangerouslySetInnerHTML={{__html: data.description}}/>
