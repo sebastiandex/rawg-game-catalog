@@ -19,7 +19,6 @@ const Slug = (props) => {
                 <BackButton>&#8592; Back to home</BackButton>
             </Link>
             <Title>{data.name || slug}</Title>
-
             <TopBlock>
                 <Image
                     alt='image'
@@ -42,8 +41,8 @@ const Slug = (props) => {
                 </InfoBlock>
 
             </TopBlock>
-                <SwiperView data={screenshots}/>
-            <Description dangerouslySetInnerHTML={{ __html: data.description }} />
+            <SwiperView data={screenshots}/>
+            <Description dangerouslySetInnerHTML={{__html: data.description}}/>
         </MainContainer>
     )
 }
@@ -51,9 +50,9 @@ const Slug = (props) => {
 export default Slug
 
 export async function getStaticPaths() {
-    const data = await (await fetch(`${API}/games?page_size=300&key=${API_KEY}`))?.json()
+    const data = await (await fetch(`${API}/games?page_size=7200&key=${API_KEY}`))?.json()
     const paths = data.results.map((item) => ({
-        params: { slug: item.slug },
+        params: {slug: item.slug},
     }));
     return {
         paths,

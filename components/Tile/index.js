@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import {Container, Title} from "./styles";
+import {Container, ImageContainer, InfoContainer, InfoBlock, Title} from "./styles";
 import noImage from './../../public/images/noimage.jpeg';
 
 const Tile = ({data}) => {
@@ -12,19 +12,20 @@ const Tile = ({data}) => {
             as={`game/${slug}`}
         >
             <Container>
-                <Image
-                    alt='img'
-                    height='144'
-                    width='250'
-                    src={background_image || noImage}
-                />
-                <Title>{name}</Title>
-                <div>&#11088; &nbsp; {rating}</div>
-                <div>&#128197; &nbsp; {released}</div>
+                <ImageContainer>
+                    <Image
+                        alt='img'
+                        layout='fill'
+                        src={background_image || noImage}
+                    />
+                </ImageContainer>
+                <InfoContainer>
+                    <Title>{name}</Title>
+                    <InfoBlock>&#11088; &nbsp; {rating}</InfoBlock>
+                    <InfoBlock>&#128197; &nbsp; {released}</InfoBlock>
+                </InfoContainer>
             </Container>
         </Link>
-
-
     )
 }
 

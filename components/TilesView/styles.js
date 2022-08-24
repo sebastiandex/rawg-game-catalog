@@ -1,10 +1,9 @@
 import styled from 'styled-components';
 
 const GridWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill,270px);
-  grid-template-rows: 305px 305px;
-  grid-gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
 `
 const Loader = styled.div`
   position: fixed;

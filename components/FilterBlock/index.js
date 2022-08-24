@@ -1,6 +1,6 @@
 import {Container, Input, Select} from "./styles";
 import {filterValues} from "../../constants";
-const FilterBlock = ({platforms, searchValue, handleSearch, handleFilterAndSort}) => {
+const FilterBlock = ({platforms, searchValue, handleSearch, handleFilter, handleSort}) => {
 
     return (
         <Container>
@@ -10,8 +10,8 @@ const FilterBlock = ({platforms, searchValue, handleSearch, handleFilterAndSort}
                 value={searchValue}
                 onChange={(e) => handleSearch(e.target.value)}
             />
-            <Select onChange={(e) => handleFilterAndSort(true, (e.target.value).toString())}>
-                <option value="0">Все платформы</option>
+            <Select onChange={(e) => handleFilter((e.target.value).toString())}>
+                <option value="">Все платформы</option>
                 {platforms.map((item) => {
                     return (
                         <option
@@ -23,7 +23,7 @@ const FilterBlock = ({platforms, searchValue, handleSearch, handleFilterAndSort}
                     )
                 })}
             </Select>
-            <Select onChange={(e) => handleFilterAndSort(false,(e.target.value))}>
+            <Select onChange={(e) => handleSort((e.target.value))}>
                 {filterValues.map((item) => {
                     return (
                         <option

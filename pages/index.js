@@ -11,13 +11,9 @@ const Home = (props) => {
     const [isSearching, setIsSearching] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchValue, setSearchValue] = useState('');
-    const [activePlatform, setActivePlatform] = useState('0');
+    const [activePlatform, setActivePlatform] = useState('');
     const [sortValue, setSortValue] = useState('');
-
     const platforms = props.platforms.results || [];
-    const [parent] = useState(activePlatform && activePlatform !== '0' ? `parent_platforms=${activePlatform}&` : '');
-    const [search] = useState(searchValue ? `search=${searchValue}&` : '');
-    const [sort] = useState(sortValue ? `ordering=${sortValue}&` : '');
     const isMount = useIsMount();
 
     useEffect(() => {
@@ -27,11 +23,16 @@ const Home = (props) => {
         }
     }, []);
 
+    const platform = activePlatform ? `parent_platforms=${activePlatform}&` : '';
+    const search = searchValue ? `search=${searchValue}&` : '';
+    const sort = sortValue ? `ordering=${sortValue}&` : '';
+
     useEffect(() => {
+        // Хук для фильтрации, сортировки и поиска
         if (!isMount) {
             const delayDebounceFn = setTimeout(() => {
                 setIsSearching(true)
-                fetch(`${API}/games?${search}${parent}${sort}key=${API_KEY}`)
+                fetch(`${API}/games?${search}${platform}${sort}key=${API_KEY}`)
                     .then((res) => {
                         return res.json()
                     })
@@ -44,17 +45,17 @@ const Home = (props) => {
             }, 500)
             return () => clearTimeout(delayDebounceFn)
         }
-    }, [searchValue]);
+    }, [isMount, search, platform, sort]);
 
     useEffect(() => {
+        // Бесконечный скролл
+        // Можно переместить в хук для фильтрации, но логика будет совсем плохо читаться
         if (isFetching) {
-            fetch(`${API}/games?${search}${parent}${sort}page=${currentPage + 1}&key=${API_KEY}`)
+            fetch(`${API}/games?${search}${platform}${sort}page=${currentPage + 1}&key=${API_KEY}`)
                 .then((res) => {
                     return res.json()
                 })
                 .then((responseData) => {
-                    console.log(data)
-                    console.log(responseData.results)
                     setData([...data, ...responseData.results])
                     setCurrentPage(prevState => prevState + 1)
                     setIsFetching(false)
@@ -63,6 +64,7 @@ const Home = (props) => {
     }, [isFetching]);
 
     const scrollHandler = (e) => {
+        // Для включения бесконечного скролла
         const scrollHeight = e.target.documentElement.scrollHeight
         const scrollTop = e.target.documentElement.scrollTop
         const innerHeight = window.innerHeight
@@ -71,37 +73,14 @@ const Home = (props) => {
         }
     };
 
-    const filterAndSort = (toggle, value) => {
-        setCurrentPage(1);
-        setIsSearching(true)
-        console.log({parent})
-        console.log({sort})
-        const parentValue = toggle && value !== '0' ? `parent_platforms=${value}&` : parent;
-        const sortValue = !toggle && value ? `ordering=${value}&` : sort;
-        console.log({parentValue})
-        if (toggle) {
-            console.log(value, typeof value)
-            setActivePlatform(value)
-        } else {
-            setSortValue(value);
-        }
-        fetch(`${API}/games?${search}${parentValue}${sortValue}page=1&key=${API_KEY}`)
-            .then((res) => {
-                return res.json()
-            })
-            .then((responseData) => {
-                setIsSearching(false)
-                setData(responseData.results)
-            })
-    }
-
     return (
         <MainContainer>
             <FilterBlock
                 platforms={platforms}
                 searchValue={searchValue}
                 handleSearch={setSearchValue}
-                handleFilterAndSort={filterAndSort}
+                handleFilter={setActivePlatform}
+                handleSort={setSortValue}
             />
             <TilesView props={{data, isFetching, isSearching}}/>
         </MainContainer>

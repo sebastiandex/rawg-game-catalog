@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import "swiper/css";
-import "swiper/css/navigation";
-import { Navigation, Pagination } from "swiper";
+import "swiper/css/pagination";
+import { Pagination } from "swiper";
 import Image from 'next/image';
 import noImage from './../../public/images/noimage.jpeg';
 
@@ -11,10 +11,9 @@ const SwiperView = ({data}) => {
                 spaceBetween={5}
                 slidesPerView={4}
                 pagination={{
-                    clickable: true,
+                    dynamicBullets: true,
                 }}
-                modules={[Pagination, Navigation]}
-                navigation={true}
+                modules={[Pagination]}
             >
                 {data?.map((item) => {
                     return (
