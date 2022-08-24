@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import {Container, ImageContainer, InfoContainer, InfoBlock, Title} from "./styles";
-import noImage from './../../public/images/noimage.jpeg';
+import noImage from './../../public/images/noimage.png';
 
 const Tile = ({data}) => {
     const {slug, background_image, name, rating, released} = data;
@@ -17,6 +17,8 @@ const Tile = ({data}) => {
                         alt='img'
                         layout='fill'
                         src={background_image || noImage}
+                        placeholder='blur'
+                        blurDataURL={noImage}
                     />
                 </ImageContainer>
                 <InfoContainer>
